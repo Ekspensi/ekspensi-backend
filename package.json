@@ -16,6 +16,8 @@
     "nodemon": "^3.1.0"
   },
   "dependencies": {
-    "@hapi/hapi": "^21.3.9"
+    "@hapi/hapi": "^21.3.9",
+    "pg": "^8.11.5",
+    "sequelize": "^6.37.3"
   }
 }

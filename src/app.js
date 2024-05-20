@@ -1,5 +1,7 @@
 const Hapi = require("@hapi/hapi");
 const Routes = require("./routes");
+const sequelize = require('../config/database');
+const User = require('../model/User');
 
 const init = async () => {
   const server = Hapi.server({
@@ -11,6 +13,13 @@ const init = async () => {
 
   await server.start();
   console.log("Server running on %s", server.info.uri);
+
+  sequelize.authenticate().then(()=>{
+    server.listen(3000,()=> console.log(`Database connected successfully and app listening on port ${3000}`))
+  })
+  .catch((error)=>{
+    console.log(error.message)
+  });
 };
 
 process.on("unhandledRejection", (err) => {
