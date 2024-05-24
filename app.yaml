@@ -1,0 +1,5 @@
+runtime: nodejs20
+service: capstone
+
+env_variables:
+  ACCESS_TOKEN_SECRET: "super_strong_access_token_secret"

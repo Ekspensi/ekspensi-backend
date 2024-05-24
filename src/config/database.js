@@ -10,6 +10,7 @@ const sequelize = new Sequelize(
     host: "aws-0-ap-southeast-1.pooler.supabase.com",
     dialect: "postgres",
     port: 5432,
+    logging: false,
   }
 );
 

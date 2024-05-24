@@ -1,3 +1,6 @@
+const auth = require("./auth");
+const user = require("./user");
+
 module.exports = [
   {
     method: "GET",
@@ -6,4 +9,6 @@ module.exports = [
       return "Server is up and running!";
     },
   },
+  ...auth,
+  ...user,
 ];
