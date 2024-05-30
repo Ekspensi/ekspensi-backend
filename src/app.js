@@ -1,11 +1,13 @@
 const Hapi = require("@hapi/hapi");
 const Routes = require("./routes");
 const sequelize = require("./config/database");
-const User = require("./model/user");
 const hapiAuthJwt = require("hapi-auth-jwt2");
 const Inert = require("@hapi/inert");
 const Vision = require("@hapi/vision");
 const HapiSwagger = require("hapi-swagger");
+
+const User = require("./model/user");
+const Ekspensi = require("./model/ekspensi");
 
 const validate = async (decoded) => {
   return { isValid: true, credentials: decoded.payload };
@@ -70,7 +72,7 @@ process.on("unhandledRejection", (err) => {
 
 const syncModel = async () => {
   try {
-    await Promise.all([User.sync()]);
+    await Promise.all([User.sync(), Ekspensi.sync()]);
   } catch (error) {
     console.log("error:", error.message);
   }

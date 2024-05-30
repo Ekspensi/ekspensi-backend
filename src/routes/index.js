@@ -1,5 +1,6 @@
 const auth = require("./auth");
 const user = require("./user");
+const ekspensi = require("./ekspensi");
 
 module.exports = [
   {
@@ -11,4 +12,5 @@ module.exports = [
   },
   ...auth,
   ...user,
+  ...ekspensi,
 ];
