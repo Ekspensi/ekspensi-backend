@@ -8,11 +8,11 @@ const Ekspensi = sequelize.define(
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: false,
+      unique: true,
     },
     data: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     datetime: {
       type: DataTypes.DATE,
@@ -21,17 +21,14 @@ const Ekspensi = sequelize.define(
     deskripsi: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     nominal: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
     },
     klasifikasi: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
   },
   { tableName: "ekspensi", createdAt: "created_at", updatedAt: "updated_at" }
