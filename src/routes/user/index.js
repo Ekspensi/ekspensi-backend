@@ -1,73 +1,44 @@
-const { nanoid } = require("nanoid");
+const Joi = require("joi");
 
-const { hashPassword } = require("../../helpers/passwordUtility");
-const User = require("../../model/user");
+const {
+  createNewUser,
+  getCurrentUser,
+} = require("../../handlers/user_handler");
+const responseSchema = require("../../helpers/responseSchema");
 
 module.exports = [
   {
     method: "POST",
     path: "/user",
     options: {
+      auth: false,
       tags: ["api"],
+      description: `this route is used to create new user.`,
+      validate: {
+        payload: Joi.object({
+          username: Joi.string().required(),
+          phonenum: Joi.string().required(),
+          email: Joi.string().required(),
+          password: Joi.string().required(),
+        }).label("create user request"),
+      },
+      response: {
+        status: {
+          201: responseSchema
+            .append({
+              data: Joi.object()
+                .keys({
+                  username: Joi.string().required(),
+                  phonenum: Joi.string().required(),
+                  email: Joi.string().required(),
+                })
+                .label("user data response"),
+            })
+            .label("create user response"),
+        },
+      },
     },
-    handler: async (request, h) => {
-      const { username, password, phonenum, email } = request.payload;
-
-      if (!username || !password || !phonenum || !email) {
-        return h
-          .response({
-            message: "please fill all required fields",
-            status: "fail",
-            data: {},
-          })
-          .code(400);
-      }
-
-      try {
-        const id = nanoid(8);
-        const { hashedPassword, salt } = hashPassword(password);
-
-        await User.create({
-          id,
-          username,
-          password: hashedPassword,
-          password_hash: salt,
-          phonenum,
-          email,
-          created_at: new Date().toISOString(),
-          updated_at: null,
-        });
-
-        return h
-          .response({
-            message: "user created successfully",
-            status: "success",
-            data: {
-              username,
-            },
-          })
-          .code(201);
-      } catch (error) {
-        switch (error.name) {
-          case "SequelizeUniqueConstraintError":
-            return h
-              .response({
-                message: error.errors[0].message,
-                status: "fail",
-                data: {},
-              })
-              .code(400);
-          default:
-            return h
-              .response({
-                message: error.message,
-                status: "fail",
-                data: {},
-              })
-              .code(500);
-        }
-      }
-    },
+    handler: createNewUser,
   },
   {
     method: "GET",
@@ -75,45 +46,36 @@ module.exports = [
     options: {
       auth: "user-access-control",
       tags: ["api"],
-      description:
-        "A protected route that required authentication. The authenticated user can only get its own information",
-    },
-    handler: async (request, h) => {
-      try {
-        const user = await User.findOne({
-          where: { username: request.auth.credentials.username },
-        });
-
-        if (user === null) {
-          return h
-            .response({
-              message: "user not found",
-              status: "fail",
-              data: {},
+      description: `This route is used to get user information. `,
+      notes: `This route is protected by user-access-control strategy.
+      This route can only be accessed by authenticated user when the token is stored in cookie header with access_token key and issued each time request is made.
+      The user can only retrieve information of its own.
+      `,
+      validate: {
+        headers: Joi.object({
+          cookie: Joi.string().required(),
+        }),
+        options: {
+          allowUnknown: true,
+        },
+      },
+      response: {
+        status: {
+          200: responseSchema
+            .append({
+              data: Joi.object()
+                .keys({
+                  username: Joi.string().required(),
+                  phonenum: Joi.string().required(),
+                  email: Joi.string().required(),
+                })
+                .label("user data response"),
             })
-            .code(404);
-        }
-
-        return h
-          .response({
-            message: "users retrieved successfully",
-            status: "success",
-            data: {
-              username: user.username,
-              phonenum: user.phonenum,
-              email: user.email,
-            },
-          })
-          .code(200);
-      } catch (error) {
-        return h
-          .response({
-            message: error.message,
-            status: "fail",
-            data: {},
-          })
-          .code(500);
-      }
+            .label("get user response"),
+          401: responseSchema.label("unauthorized access response"),
+        },
+      },
     },
+    handler: getCurrentUser,
   },
 ];

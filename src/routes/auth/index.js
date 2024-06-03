@@ -19,7 +19,6 @@ module.exports = [
       }
 
       const { username, password } = request.payload;
-
       if (!username || !password) {
         return h
           .response({
