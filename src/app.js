@@ -15,7 +15,8 @@ const validate = async (decoded) => {
 
 const swaggerOptions = {
   info: {
-    title: "Test API Documentation",
+    title: "Ekspensi API Documentation",
+    version: "1.0.0",
   },
 };
 
@@ -29,6 +30,8 @@ const init = async () => {
       },
     },
   });
+
+  server.ext("onPreResponse", onPreResponse);
 
   await server.register([
     hapiAuthJwt,
@@ -76,6 +79,10 @@ const syncModel = async () => {
   } catch (error) {
     console.log("error:", error.message);
   }
+};
+
+const onPreResponse = (request, h) => {
+  return h.continue;
 };
 
 init();

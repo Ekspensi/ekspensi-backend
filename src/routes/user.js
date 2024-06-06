@@ -1,10 +1,7 @@
 const Joi = require("joi");
 
-const {
-  createNewUser,
-  getCurrentUser,
-} = require("../../handlers/user_handler");
-const responseSchema = require("../../helpers/responseSchema");
+const { createNewUser, getCurrentUser } = require("../handlers/user_handler");
+const { defaultResponseSchema } = require("../helpers/responseSchema");
 
 module.exports = [
   {
@@ -18,13 +15,13 @@ module.exports = [
         payload: Joi.object({
           username: Joi.string().required(),
           phonenum: Joi.string().required(),
-          email: Joi.string().required(),
+          email: Joi.string().email().required(),
           password: Joi.string().required(),
         }).label("create user request"),
       },
       response: {
         status: {
-          201: responseSchema
+          201: defaultResponseSchema
             .append({
               data: Joi.object()
                 .keys({
@@ -61,7 +58,7 @@ module.exports = [
       },
       response: {
         status: {
-          200: responseSchema
+          200: defaultResponseSchema
             .append({
               data: Joi.object()
                 .keys({
@@ -72,7 +69,7 @@ module.exports = [
                 .label("user data response"),
             })
             .label("get user response"),
-          401: responseSchema.label("unauthorized access response"),
+          401: defaultResponseSchema.label("unauthorized response"),
         },
       },
     },
