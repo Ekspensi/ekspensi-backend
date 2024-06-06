@@ -1,7 +1,7 @@
-const User = require("../../model/user");
+const User = require("../model/user");
 
-const { validatePassword } = require("../../helpers/passwordUtility");
-const { generateToken } = require("../../helpers/jwt");
+const { validatePassword } = require("../helpers/passwordUtility");
+const { generateToken } = require("../helpers/jwt");
 
 module.exports = [
   {

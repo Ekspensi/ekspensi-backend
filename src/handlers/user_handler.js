@@ -2,18 +2,13 @@ const { nanoid } = require("nanoid");
 const { hashPassword } = require("../helpers/passwordUtility");
 
 const User = require("../model/user");
+const { badRequest, internal } = require("@hapi/boom");
 
 const createNewUser = async (request, h) => {
   const { username, password, phonenum, email } = request.payload;
 
   if (!username || !password || !phonenum || !email) {
-    return h
-      .response({
-        message: "please fill all required fields",
-        status: "fail",
-        data: {},
-      })
-      .code(400);
+    return badRequest("please fill all required fields");
   }
 
   try {
@@ -43,21 +38,9 @@ const createNewUser = async (request, h) => {
   } catch (error) {
     switch (error.name) {
       case "SequelizeUniqueConstraintError":
-        return h
-          .response({
-            message: error.errors[0].message,
-            status: "fail",
-            data: {},
-          })
-          .code(400);
+        return badRequest(error.errors[0].message);
       default:
-        return h
-          .response({
-            message: error.message,
-            status: "fail",
-            data: {},
-          })
-          .code(500);
+        return internal(error.message);
     }
   }
 };
@@ -69,19 +52,14 @@ const getCurrentUser = async (request, h) => {
     });
 
     if (user === null) {
-      return h
-        .response({
-          message: "user not found",
-          status: "fail",
-          data: {},
-        })
-        .code(404);
+      return badRequest("user not found");
     }
 
     return h
       .response({
+        statusCode: 200,
         message: "users retrieved successfully",
-        status: "success",
+        error: null,
         data: {
           username: user.username,
           phonenum: user.phonenum,
@@ -90,13 +68,7 @@ const getCurrentUser = async (request, h) => {
       })
       .code(200);
   } catch (error) {
-    return h
-      .response({
-        message: error.message,
-        status: "fail",
-        data: {},
-      })
-      .code(500);
+    return internal(error.message);
   }
 };
 
