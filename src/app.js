@@ -82,6 +82,8 @@ const syncModel = async () => {
 };
 
 const onPreResponse = (request, h) => {
+  const response = request.response;
+  console.log(response);
   return h.continue;
 };
 

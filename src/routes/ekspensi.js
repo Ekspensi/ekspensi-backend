@@ -1,6 +1,6 @@
 const { nanoid } = require("nanoid");
 
-const Ekspensi = require("../../model/ekspensi");
+const Ekspensi = require("../model/ekspensi");
 
 module.exports = [
   {
@@ -10,9 +10,9 @@ module.exports = [
       tags: ["api"],
     },
     handler: async (request, h) => {
-      const { data, deskripsi, nominal ,klasifikasi } = request.payload;
+      const { data, deskripsi, nominal, klasifikasi } = request.payload;
 
-      if (!data || !deskripsi || !nominal || !klasifikasi ) {
+      if (!data || !deskripsi || !nominal || !klasifikasi) {
         return h
           .response({
             message: "please fill all required fields",
@@ -71,7 +71,7 @@ module.exports = [
     method: "GET",
     path: "/ekspensi",
     options: {
-      tags: ["api"]
+      tags: ["api"],
     },
     handler: async (request, h) => {
       try {

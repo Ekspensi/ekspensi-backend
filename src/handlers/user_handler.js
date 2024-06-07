@@ -28,10 +28,13 @@ const createNewUser = async (request, h) => {
 
     return h
       .response({
+        statusCode: 201,
         message: "user created successfully",
-        status: "success",
+        error: null,
         data: {
           username,
+          phonenum,
+          email,
         },
       })
       .code(201);
