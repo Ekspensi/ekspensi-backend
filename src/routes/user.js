@@ -66,7 +66,7 @@ module.exports = [
                   phonenum: Joi.string().required(),
                   email: Joi.string().required(),
                 })
-                .label("user data response"),
+                .label("user data schema"),
             })
             .label("get user response"),
           401: defaultResponseSchema.label("unauthorized response"),
