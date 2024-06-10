@@ -8,16 +8,13 @@ const HapiSwagger = require("hapi-swagger");
 
 const User = require("./model/user");
 const Ekspensi = require("./model/ekspensi");
+const NLPClassification = require("./helpers/nlp");
 
 const validate = async (decoded) => {
-  return { isValid: true, credentials: decoded.payload };
-};
-
-const swaggerOptions = {
-  info: {
-    title: "Ekspensi API Documentation",
-    version: "1.0.0",
-  },
+  if (decoded.payload) {
+    return { isValid: true, credentials: decoded.payload };
+  }
+  return { isValid: false };
 };
 
 const init = async () => {
@@ -39,26 +36,47 @@ const init = async () => {
     Vision,
     {
       plugin: HapiSwagger,
-      options: swaggerOptions,
+      options: {
+        info: {
+          title: "Ekspensi API Documentation",
+          version: "1.0.0",
+        },
+      },
     },
   ]);
 
   server.auth.strategy("user-access-control", "jwt", {
     key: process.env.ACCESS_TOKEN_SECRET || "access_token_secret",
-    cookieKey: "access_token",
-    headerKey: false,
+    cookieKey: null,
+    headerKey: true,
     validate: validate,
+    errorFunc: (ctx) => {
+      console.log(ctx);
+      if (ctx.scheme === "Token" && ctx.errorType === "unauthorized") {
+        return {
+          errorType: "unauthorized",
+          message: ctx.message,
+        };
+      }
+
+      return ctx;
+    },
     verify: {
       nbf: true,
       exp: true,
     },
-    verifyOptions: { algorithms: ["HS256"] }, // Specify the algorithms used to verify the JWT
+    verifyOptions: { algorithms: ["HS256"] },
   });
 
   server.route(Routes);
 
   try {
-    await Promise.all([sequelize.authenticate(), syncModel(), server.start()]);
+    await Promise.all([
+      sequelize.authenticate({ retry: { timeout: 5000 } }),
+      syncDbModels(),
+      loadMlModels(server),
+      server.start(),
+    ]);
 
     console.log("Connection has been established successfully.");
     console.log("Server running on %s", server.info.uri);
@@ -73,7 +91,7 @@ process.on("unhandledRejection", (err) => {
   process.exit(1);
 });
 
-const syncModel = async () => {
+const syncDbModels = async () => {
   try {
     await Promise.all([User.sync(), Ekspensi.sync()]);
   } catch (error) {
@@ -81,9 +99,22 @@ const syncModel = async () => {
   }
 };
 
+const loadMlModels = async (server) => {
+  server.app = {
+    models: {
+      ml: {
+        nlp: await NLPClassification,
+      },
+    },
+  };
+};
+
 const onPreResponse = (request, h) => {
   const response = request.response;
-  console.log(response);
+  if (response.isBoom) {
+    const error = response.output.payload;
+    return h.response(error).code(response.output.statusCode);
+  }
   return h.continue;
 };
 

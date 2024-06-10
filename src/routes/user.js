@@ -64,7 +64,6 @@ module.exports = [
                 .keys({
                   username: Joi.string().required(),
                   phonenum: Joi.string().required(),
-                  email: Joi.string().required(),
                 })
                 .label("user data schema"),
             })

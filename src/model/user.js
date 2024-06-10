@@ -27,11 +27,6 @@ const User = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
