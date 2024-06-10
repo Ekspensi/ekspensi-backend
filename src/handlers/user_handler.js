@@ -5,9 +5,9 @@ const User = require("../model/user");
 const { badRequest, internal } = require("@hapi/boom");
 
 const createNewUser = async (request, h) => {
-  const { username, password, phonenum, email } = request.payload;
+  const { username, password, phonenum } = request.payload;
 
-  if (!username || !password || !phonenum || !email) {
+  if (!username || !password || !phonenum) {
     return badRequest("please fill all required fields");
   }
 
@@ -21,7 +21,6 @@ const createNewUser = async (request, h) => {
       password: hashedPassword,
       password_hash: salt,
       phonenum,
-      email,
       created_at: new Date().toISOString(),
       updated_at: null,
     });
@@ -34,7 +33,6 @@ const createNewUser = async (request, h) => {
         data: {
           username,
           phonenum,
-          email,
         },
       })
       .code(201);
@@ -66,7 +64,6 @@ const getCurrentUser = async (request, h) => {
         data: {
           username: user.username,
           phonenum: user.phonenum,
-          email: user.email,
         },
       })
       .code(200);
