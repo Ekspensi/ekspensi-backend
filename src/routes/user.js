@@ -15,7 +15,6 @@ module.exports = [
         payload: Joi.object({
           username: Joi.string().required(),
           phonenum: Joi.string().required(),
-          email: Joi.string().email().required(),
           password: Joi.string().required(),
         }).label("create user request"),
       },
@@ -27,7 +26,6 @@ module.exports = [
                 .keys({
                   username: Joi.string().required(),
                   phonenum: Joi.string().required(),
-                  email: Joi.string().required(),
                 })
                 .label("user data response"),
             })
