@@ -10,6 +10,10 @@ const Ekspensi = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     data: {
       type: DataTypes.STRING,
       allowNull: false,
