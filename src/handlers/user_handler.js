@@ -1,8 +1,7 @@
-const { nanoid } = require("nanoid");
-const { hashPassword } = require("../helpers/passwordUtility");
-
-const User = require("../model/user");
-const { badRequest, internal } = require("@hapi/boom");
+import { nanoid } from "nanoid";
+import { hashPassword } from "../helpers/passwordUtility.js";
+import User from "../model/user.js";
+import { badRequest, internal } from "@hapi/boom";
 
 const createNewUser = async (request, h) => {
   const { username, password, phonenum } = request.payload;
@@ -72,4 +71,4 @@ const getCurrentUser = async (request, h) => {
   }
 };
 
-module.exports = { createNewUser, getCurrentUser };
+export { createNewUser, getCurrentUser };

@@ -1,9 +1,9 @@
-const Joi = require("joi");
+// Import modules
+import Joi from "joi";
+import { createNewUser, getCurrentUser } from "../handlers/user_handler.js";
+import { defaultResponseSchema } from "../helpers/responseSchema.js";
 
-const { createNewUser, getCurrentUser } = require("../handlers/user_handler");
-const { defaultResponseSchema } = require("../helpers/responseSchema");
-
-module.exports = [
+export default [
   {
     method: "POST",
     path: "/user",

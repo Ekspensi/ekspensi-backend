@@ -1,8 +1,46 @@
-const Ekspensi = require("../model/ekspensi");
+import Ekspensi from "../model/ekspensi.js";
+import * as ocr from "@paddle-js-models/ocr";
 
-const { insertEkspensi } = require("../handlers/ekspensi_handler");
+import { insertEkspensi } from "../handlers/ekspensi_handler.js";
 
-module.exports = [
+export default [
+  {
+    method: "POST",
+    path: "/ekspensi/ocr",
+    handler: async (request, h) => {
+      try {
+        const { image } = request.payload;
+
+        // await ocr.init();
+        // const res = await ocr.recognize(image);
+
+        // console.log(res);
+
+        return h
+          .response({
+            message: "data retrieved successfully",
+            status: "success",
+            data: null,
+          })
+          .code(200);
+      } catch (e) {
+        return h
+          .response({
+            message: e.message,
+            status: "fail",
+            data: {},
+          })
+          .code(500);
+      }
+    },
+    options: {
+      payload: {
+        allow: "multipart/form-data",
+        multipart: true,
+        maxBytes: 1048576,
+      },
+    },
+  },
   {
     method: "POST",
     path: "/ekspensi",

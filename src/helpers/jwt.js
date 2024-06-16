@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
-const { nanoid } = require("nanoid");
+import jwt from "jsonwebtoken";
+import { nanoid } from "nanoid";
 
 const generateToken = (
   payload,
@@ -18,4 +18,4 @@ const generateToken = (
   );
 };
 
-module.exports = { generateToken };
+export { generateToken };

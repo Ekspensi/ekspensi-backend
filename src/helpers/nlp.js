@@ -1,20 +1,22 @@
-const tfjs = require("@tensorflow/tfjs-node");
+import tfjs from "@tensorflow/tfjs-node";
 
-module.exports = (async () => {
+const bucketName = process.env.GCP_BUCKET_NAME || "ekspensi-capstone-1122";
+
+export default (async () => {
   return {
     model: await (() => {
       return tfjs.loadLayersModel(
-        "https://storage.googleapis.com/ekspensi-capstone-1122/ml-model/nlp-classification/model.json"
+        `https://storage.googleapis.com/${bucketName}/ml-model/nlp-classification/model.json`
       );
     })(),
-    vocabulary: await (() => {
-      return fetch(
-        "https://storage.googleapis.com/ekspensi-capstone-1122/ml-model/nlp-classification/vocabulary.json"
+    vocabulary: await (async () => {
+      return await fetch(
+        `https://storage.googleapis.com/${bucketName}/ml-model/nlp-classification/vocabulary.json`
       ).then((response) => response.json());
     })(),
     label: await (async () => {
       return await fetch(
-        "https://storage.googleapis.com/ekspensi-capstone-1122/ml-model/nlp-classification/label_encoder.json"
+        `https://storage.googleapis.com/${bucketName}/ml-model/nlp-classification/label_encoder.json`
       )
         .then((response) => response.json())
         .then((data) => data.classes);
@@ -36,7 +38,6 @@ module.exports = (async () => {
       });
 
       const tensor = new tfjs.tensor2d([vector]);
-
       const predict = this.model.predict(tensor);
       const predictedClass = predict.argMax(-1).dataSync()[0];
       const result = this.label[predictedClass];

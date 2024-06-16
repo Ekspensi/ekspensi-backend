@@ -1,5 +1,5 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
 
 const Ekspensi = sequelize.define(
   "ekspensi",
@@ -38,4 +38,4 @@ const Ekspensi = sequelize.define(
   { tableName: "ekspensi", createdAt: "created_at", updatedAt: "updated_at" }
 );
 
-module.exports = Ekspensi;
+export default Ekspensi;

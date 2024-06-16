@@ -1,14 +1,14 @@
-const Hapi = require("@hapi/hapi");
-const Routes = require("./routes");
-const sequelize = require("./config/database");
-const hapiAuthJwt = require("hapi-auth-jwt2");
-const Inert = require("@hapi/inert");
-const Vision = require("@hapi/vision");
-const HapiSwagger = require("hapi-swagger");
+import Hapi from "@hapi/hapi";
+import Routes from "./routes/index.js";
+import sequelize from "./config/database.js";
+import hapiAuthJwt from "hapi-auth-jwt2";
+import Inert from "@hapi/inert";
+import Vision from "@hapi/vision";
+import HapiSwagger from "hapi-swagger";
 
-const User = require("./model/user");
-const Ekspensi = require("./model/ekspensi");
-const NLPClassification = require("./helpers/nlp");
+import User from "./model/user.js";
+import Ekspensi from "./model/ekspensi.js";
+import NLPClassification from "./helpers/nlp.js";
 
 const validate = async (decoded) => {
   if (decoded.payload) {
@@ -74,6 +74,7 @@ const init = async () => {
     await Promise.all([
       sequelize.authenticate({ retry: { timeout: 5000 } }),
       syncDbModels(),
+      sequelize.query("CREATE EXTENSION IF NOT EXISTS tablefunc;"),
       loadMlModels(server),
       server.start(),
     ]);
@@ -95,7 +96,7 @@ const syncDbModels = async () => {
   try {
     await Promise.all([User.sync(), Ekspensi.sync()]);
   } catch (error) {
-    console.log("error:", error.message);
+    console.log("error: ", error.message);
   }
 };
 

@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+import crypto from "crypto";
 
 const hashPassword = (password) => {
   const salt = crypto.randomBytes(16).toString("hex");
@@ -19,4 +19,4 @@ const validatePassword = (password, salt, hashedPassword) => {
   return hashedPassword === validateHash;
 };
 
-module.exports = { hashPassword, validatePassword };
+export { hashPassword, validatePassword };

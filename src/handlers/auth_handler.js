@@ -1,7 +1,7 @@
-const { badRequest, internal } = require("@hapi/boom");
-const { generateToken } = require("../helpers/jwt");
-const { validatePassword } = require("../helpers/passwordUtility");
-const User = require("../model/user");
+import { badRequest, internal } from "@hapi/boom";
+import { generateToken } from "../helpers/jwt.js";
+import { validatePassword } from "../helpers/passwordUtility.js";
+import User from "../model/user.js";
 
 const signInHandler = async (request, h) => {
   if (request.payload === null) {
@@ -32,7 +32,6 @@ const signInHandler = async (request, h) => {
 
     const jwt = generateToken({
       username: user.username,
-      email: user.email,
       phonenum: user.phonenum,
     });
 
@@ -72,4 +71,4 @@ const signOutHandler = async (_, h) => {
     .code(200);
 };
 
-module.exports = { signInHandler, signOutHandler };
+export { signInHandler, signOutHandler };
