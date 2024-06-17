@@ -13,12 +13,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Set env
+    - name: Create app.yaml for Deploy to GAE
       run: |
-        export GCP_BUCKET_NAME=${{ secrets.GCP_BUCKET_NAME }}
-        export GCP_BUCKET_NAME=${{ secrets.GCP_BUCKET_NAME }}
+        echo "runtime: nodejs20" > app.yaml
+        echo "service: capstone" >> app.yaml
+        echo ""
+        echo "env_variables:" >> app.yaml
+        echo "  ACCESS_TOKEN_SECRET: '${{ secrets.ACCESS_TOKEN_SECRET }}'" >> app.yaml
+        echo "  GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}" >> app.yaml
 
-    - name: Deploy to App Engine
+    - name: Deploy to GAE
       id: deploy
       uses: google-github-actions/deploy-appengine@v0.2.0
       with:
@@ -27,5 +31,5 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECTID }}
         credentials: ${{ secrets.GCP_CREDENTIALS }}
 
-    - name: Test
+    - name: Test Availability
       run: curl "${{ steps.deploy.outputs.url }}"
