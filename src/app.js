@@ -51,7 +51,6 @@ const init = async () => {
     headerKey: true,
     validate: validate,
     errorFunc: (ctx) => {
-      console.log(ctx);
       if (ctx.scheme === "Token" && ctx.errorType === "unauthorized") {
         return {
           errorType: "unauthorized",
@@ -78,6 +77,8 @@ const init = async () => {
       loadMlModels(server),
       server.start(),
     ]);
+
+    const x = server.app.models.ml.nlp.predict("beli bensin");
 
     console.log("Connection has been established successfully.");
     console.log("Server running on %s", server.info.uri);
@@ -113,6 +114,7 @@ const loadMlModels = async (server) => {
 const onPreResponse = (request, h) => {
   const response = request.response;
   if (response.isBoom) {
+    // console.log(response);
     const error = response.output.payload;
     return h.response(error).code(response.output.statusCode);
   }

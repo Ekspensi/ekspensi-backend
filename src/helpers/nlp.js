@@ -23,9 +23,27 @@ export default (async () => {
     })(),
 
     predict: function (text) {
-      const price = text
-        .match(/\d+/g)
-        .filter((e) => e.length > 3 && parseFloat(e) >= 100 && !isNaN(e));
+      let price = text.match(/\d+/g);
+      if (!price) {
+        return {
+          label: "error",
+          text: "please provide the nominal in the sentence.",
+          price: 0,
+        };
+      }
+
+      price = price.filter(
+        (e) => e.length >= 3 && parseFloat(e) >= 100 && !isNaN(e)
+      );
+
+      if (price.length === 0) {
+        return {
+          label: "error",
+          text: "please make sure the nominal is more than 100.",
+          price: 0,
+        };
+      }
+
       const cleanedText = text.replace(/\d+/g, "").replace(/\s+/g, " ").trim();
       const textSplit = cleanedText.split(" ");
       const vector = new Array(Object.keys(this.vocabulary).length).fill(0);

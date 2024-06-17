@@ -10,6 +10,7 @@
   },
   "author": "",
   "type": "module",
+  "module": "es2022",
   "license": "ISC",
   "description": "",
   "devDependencies": {
@@ -23,7 +24,7 @@
     "@hapi/hapi": "^21.3.9",
     "@hapi/inert": "^7.1.0",
     "@hapi/vision": "^7.0.3",
-    "@paddle-js-models/ocr": "^4.1.1",
+    "@paddle-js-models/ocr": "^4.0.0",
     "@tensorflow/tfjs-node": "^3.21.1",
     "bcrypt": "^5.1.1",
     "hapi-auth-jwt2": "^10.5.1",

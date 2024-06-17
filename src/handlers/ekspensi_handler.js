@@ -1,29 +1,31 @@
-// Import modules
 import { nanoid } from "nanoid";
 import Ekspensi from "../model/ekspensi.js";
+import { badRequest, internal } from "@hapi/boom";
+
+const getEkspensi = async (request, h) => {};
 
 const insertEkspensi = async (request, h) => {
-  const { data } = request.payload;
-  const { username } = request.auth.credentials;
-
-  if (!data) {
-    return h
-      .response({
-        message: "please fill the data",
-        status: "fail",
-        data: {},
-      })
-      .code(400);
-  }
-
   try {
-    const id = nanoid(8);
+    const payload = request.payload;
+    if (!payload) {
+      return badRequest("please provide the data");
+    }
 
+    const { username } = request.auth.credentials;
+    const { data } = payload;
+
+    if (!data) {
+      return badRequest("please provide the data");
+    }
+
+    const id = nanoid(8);
     const predict = request.server.app.models.ml.nlp.predict(data);
 
-    //   console.log(predict)
+    if (predict.label === "error") {
+      return badRequest(predict.text);
+    }
 
-    await Ekspensi.create({
+    const ekspensi = {
       id,
       username,
       data,
@@ -33,37 +35,28 @@ const insertEkspensi = async (request, h) => {
       klasifikasi: predict.label,
       created_at: new Date().toISOString(),
       updated_at: null,
-    });
+    };
+
+    await Ekspensi.create(ekspensi);
+
+    delete ekspensi.username;
 
     return h
       .response({
+        statusCode: 201,
         message: "data created successfully",
-        status: "success",
-        data: {
-          data,
-        },
+        error: null,
+        data: ekspensi,
       })
       .code(201);
   } catch (error) {
     switch (error.name) {
       case "SequelizeUniqueConstraintError":
-        return h
-          .response({
-            message: error.errors[0].message,
-            status: "fail",
-            data: {},
-          })
-          .code(400);
+        return badRequest(error.errors[0].message);
       default:
-        return h
-          .response({
-            message: error.message,
-            status: "fail",
-            data: {},
-          })
-          .code(500);
+        return internal(error.message);
     }
   }
 };
 
-export { insertEkspensi };
+export { insertEkspensi, getEkspensi };

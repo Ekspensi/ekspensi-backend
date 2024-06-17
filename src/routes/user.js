@@ -1,4 +1,3 @@
-// Import modules
 import Joi from "joi";
 import { createNewUser, getCurrentUser } from "../handlers/user_handler.js";
 import { defaultResponseSchema } from "../helpers/responseSchema.js";
@@ -48,7 +47,7 @@ export default [
       `,
       validate: {
         headers: Joi.object({
-          cookie: Joi.string().required(),
+          authorization: Joi.string().required(),
         }),
         options: {
           allowUnknown: true,
