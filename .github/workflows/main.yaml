@@ -13,6 +13,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Set env
+      run: |
+        export GCP_BUCKET_NAME=${{ secrets.GCP_BUCKET_NAME }}
+        export GCP_BUCKET_NAME=${{ secrets.GCP_BUCKET_NAME }}
+
     - name: Deploy to App Engine
       id: deploy
       uses: google-github-actions/deploy-appengine@v0.2.0

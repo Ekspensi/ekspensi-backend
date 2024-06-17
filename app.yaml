@@ -1,6 +1,2 @@
 runtime: nodejs20
 service: capstone
-
-env_variables:
-  ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-  GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
