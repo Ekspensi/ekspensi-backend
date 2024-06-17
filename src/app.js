@@ -41,6 +41,7 @@ const init = async () => {
           title: "Ekspensi API Documentation",
           version: "1.0.0",
         },
+        documentationPath: "/documentation",
       },
     },
   ]);
@@ -115,7 +116,7 @@ const loadMlModels = async (server) => {
 const onPreResponse = (request, h) => {
   const response = request.response;
   if (response.isBoom) {
-    console.log(response);
+    console.log(process.env.GCP_BUCKET_NAME);
     const error = response.output.payload;
     return h.response(error).code(response.output.statusCode);
   }
