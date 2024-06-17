@@ -1,70 +1,62 @@
-const { nanoid } = require("nanoid");
+import { nanoid } from "nanoid";
+import Ekspensi from "../model/ekspensi.js";
+import { badRequest, internal } from "@hapi/boom";
 
-const Ekspensi = require("../model/ekspensi");
+const getEkspensi = async (request, h) => {};
 
 const insertEkspensi = async (request, h) => {
-    const { data } = request.payload;
+  try {
+    const payload = request.payload;
+    if (!payload) {
+      return badRequest("please provide the data");
+    }
+
     const { username } = request.auth.credentials;
+    const { data } = payload;
 
     if (!data) {
-      return h
-        .response({
-          message: "please fill the data",
-          status: "fail",
-          data: {},
-        })
-        .code(400);
+      return badRequest("please provide the data");
     }
 
-    try {
-      const id = nanoid(8);
+    const id = nanoid(8);
+    const predict = request.server.app.models.ml.nlp.predict(data);
 
-      const predict = request.server.app.models.ml.nlp.predict(data)
-        
-    //   console.log(predict)
-
-      await Ekspensi.create({
-        id,
-        username,
-        data,
-        datetime: new Date().toISOString(),
-        deskripsi: predict.text,
-        nominal: predict.price,
-        klasifikasi: predict.label,
-        created_at: new Date().toISOString(),
-        updated_at: null,
-      });
-
-      return h
-        .response({
-          message: "data created successfully",
-          status: "success",
-          data: {
-            data,
-          },
-        })
-        .code(201);
-    } catch (error) {
-      switch (error.name) {
-        case "SequelizeUniqueConstraintError":
-          return h
-            .response({
-              message: error.errors[0].message,
-              status: "fail",
-              data: {},
-            })
-            .code(400);
-        default:
-          return h
-            .response({
-              message: error.message,
-              status: "fail",
-              data: {},
-            })
-            .code(500);
-      }
+    if (predict.label === "error") {
+      return badRequest(predict.text);
     }
 
+    const ekspensi = {
+      id,
+      username,
+      data,
+      datetime: new Date().toISOString(),
+      deskripsi: predict.text,
+      nominal: predict.price,
+      klasifikasi: predict.label,
+      created_at: new Date().toISOString(),
+      updated_at: null,
+    };
+
+    await Ekspensi.create(ekspensi);
+
+    delete ekspensi.username;
+
+    return h
+      .response({
+        statusCode: 201,
+        message: "data created successfully",
+        error: null,
+        data: ekspensi,
+      })
+      .code(201);
+  } catch (error) {
+    switch (error.name) {
+      case "SequelizeUniqueConstraintError":
+        return badRequest(error.errors[0].message);
+      default:
+        return internal(error.message);
+    }
+  }
 };
 
-module.exports = { insertEkspensi };
+export { insertEkspensi, getEkspensi };

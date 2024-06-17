@@ -1,8 +1,8 @@
-const Joi = require("joi");
-const { signInHandler, signOutHandler } = require("../handlers/auth_handler");
-const { defaultResponseSchema } = require("../helpers/responseSchema");
+import Joi from "joi";
+import { signInHandler, signOutHandler } from "../handlers/auth_handler.js";
+import { defaultResponseSchema } from "../helpers/responseSchema.js";
 
-module.exports = [
+export default [
   {
     method: "POST",
     path: "/auth/signin",

@@ -1,4 +1,4 @@
-const Joi = require("joi");
+import Joi from "joi";
 
 const defaultResponseSchema = Joi.object({
   statusCode: Joi.number().min(100).max(599).required(),
@@ -7,4 +7,4 @@ const defaultResponseSchema = Joi.object({
   data: Joi.any().optional(),
 }).label("default response");
 
-module.exports = { defaultResponseSchema };
+export { defaultResponseSchema };

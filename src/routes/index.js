@@ -1,8 +1,8 @@
-const auth = require("./auth");
-const user = require("./user");
-const ekspensi = require("./ekspensi");
+import auth from "./auth.js";
+import user from "./user.js";
+import ekspensi from "./ekspensi.js";
 
-module.exports = [
+export default [
   {
     method: "GET",
     path: "/",

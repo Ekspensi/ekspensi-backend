@@ -1,9 +1,8 @@
-const Joi = require("joi");
+import Joi from "joi";
+import { createNewUser, getCurrentUser } from "../handlers/user_handler.js";
+import { defaultResponseSchema } from "../helpers/responseSchema.js";
 
-const { createNewUser, getCurrentUser } = require("../handlers/user_handler");
-const { defaultResponseSchema } = require("../helpers/responseSchema");
-
-module.exports = [
+export default [
   {
     method: "POST",
     path: "/user",
@@ -48,7 +47,7 @@ module.exports = [
       `,
       validate: {
         headers: Joi.object({
-          cookie: Joi.string().required(),
+          authorization: Joi.string().required(),
         }),
         options: {
           allowUnknown: true,
