@@ -117,6 +117,7 @@ const onPreResponse = (request, h) => {
   const response = request.response;
   if (response.isBoom) {
     console.log(process.env.GCP_BUCKET_NAME);
+    console.log(process.env.ACCESS_TOKEN_SECRET);
     const error = response.output.payload;
     return h.response(error).code(response.output.statusCode);
   }
