@@ -73,6 +73,7 @@ const init = async () => {
     await Promise.all([
       sequelize.authenticate({ retry: { timeout: 5000 } }),
       syncDbModels(),
+      sequelize.query("SET timezone TO 'Asia/Jakarta';"),
       sequelize.query("CREATE EXTENSION IF NOT EXISTS tablefunc;"),
       loadMlModels(server),
       server.start(),
@@ -114,7 +115,7 @@ const loadMlModels = async (server) => {
 const onPreResponse = (request, h) => {
   const response = request.response;
   if (response.isBoom) {
-    // console.log(response);
+    console.log(response);
     const error = response.output.payload;
     return h.response(error).code(response.output.statusCode);
   }
