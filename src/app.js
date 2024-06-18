@@ -80,8 +80,8 @@ const init = async () => {
     ]);
 
     await getSignedUrl(
-      "ekspensi-ml-model",
-      "ml-model/nlp-classification/vocabulary.json"
+      "ekspensi-bucket-6969",
+      "ml-model/nlp-classification/model.json"
     );
 
     console.log("Connection has been established successfully.");
@@ -117,7 +117,6 @@ const loadMlModels = async (server) => {
 
 const onPreResponse = (request, h) => {
   const response = request.response;
-  console.log(response);
   if (response.isBoom) {
     const error = response.output.payload;
     return h.response(error).code(response.output.statusCode);

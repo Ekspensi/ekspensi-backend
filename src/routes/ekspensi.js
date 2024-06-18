@@ -50,6 +50,9 @@ export default [
         headers: Joi.object({
           authorization: Joi.string().required(),
         }),
+        payload: Joi.object({
+          data: Joi.string().required(),
+        }),
         options: {
           allowUnknown: true,
         },
