@@ -1,0 +1,39 @@
+name: Deploy to App Engine
+
+on:
+  pull_request:
+    branches: [development]
+
+jobs:
+  deploy:
+    name: Deploying to App Engine
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Create app.yaml for Deploy to GAE
+      run: |
+        echo "runtime: nodejs20" > app.yaml
+        echo "service: capstone" >> app.yaml
+        echo ""
+        echo "env_variables:" >> app.yaml
+        echo "  ACCESS_TOKEN_SECRET: '${{ secrets.ACCESS_TOKEN_SECRET }}'" >> app.yaml
+        echo "  GCP_BUCKET_NAME: '${{ secrets.GCP_BUCKET_NAME }}'" >> app.yaml
+        echo "  DB_HOST: '${{ secrets.DB_HOST }}'" >> app.yaml
+        echo "  DB_NAME: '${{ secrets.DB_NAME }}'" >> app.yaml
+        echo "  DB_USERNAME: '${{ secrets.DB_USERNAME }}'" >> app.yaml
+        echo "  DB_PASSWORD: '${{ secrets.DB_PASSWORD }}'" >> app.yaml
+
+    - name: Deploy to GAE
+      id: deploy
+      uses: google-github-actions/deploy-appengine@v0.2.0
+      with:
+        deliverables: app.yaml
+        version: v1
+        project_id: ${{ secrets.GCP_PROJECTID }}
+        credentials: ${{ secrets.GCP_CREDENTIALS }}
+
+    - name: Test Availability
+      run: curl "${{ steps.deploy.outputs.url }}"

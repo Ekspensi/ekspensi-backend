@@ -1,6 +1,6 @@
 import tfjs from "@tensorflow/tfjs-node";
 
-const bucketName = "ekspensi-capstone-1122";
+const bucketName = process.env.GCP_BUCKET_NAME;
 
 export default (async () => {
   return {

@@ -10,13 +10,6 @@ import User from "./model/user.js";
 import Ekspensi from "./model/ekspensi.js";
 import NLPClassification from "./helpers/nlp.js";
 
-const validate = async (decoded) => {
-  if (decoded.payload) {
-    return { isValid: true, credentials: decoded.payload };
-  }
-  return { isValid: false };
-};
-
 const init = async () => {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
@@ -47,10 +40,15 @@ const init = async () => {
   ]);
 
   server.auth.strategy("user-access-control", "jwt", {
-    key: process.env.ACCESS_TOKEN_SECRET || "access_token_secret",
+    key: process.env.ACCESS_TOKEN_SECRET,
     cookieKey: null,
     headerKey: true,
-    validate: validate,
+    validate: async (decoded) => {
+      if (decoded.payload) {
+        return { isValid: true, credentials: decoded.payload };
+      }
+      return { isValid: false };
+    },
     errorFunc: (ctx) => {
       if (ctx.scheme === "Token" && ctx.errorType === "unauthorized") {
         return {
@@ -79,8 +77,6 @@ const init = async () => {
       loadMlModels(server),
       server.start(),
     ]);
-
-    const x = server.app.models.ml.nlp.predict("beli bensin");
 
     console.log("Connection has been established successfully.");
     console.log("Server running on %s", server.info.uri);
@@ -115,9 +111,8 @@ const loadMlModels = async (server) => {
 
 const onPreResponse = (request, h) => {
   const response = request.response;
+  console.log(response);
   if (response.isBoom) {
-    console.log(process.env.GCP_BUCKET_NAME);
-    console.log(process.env.ACCESS_TOKEN_SECRET);
     const error = response.output.payload;
     return h.response(error).code(response.output.statusCode);
   }
