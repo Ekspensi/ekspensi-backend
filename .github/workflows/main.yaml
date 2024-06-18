@@ -16,7 +16,8 @@ jobs:
     - name: Create app.yaml for Deploy to GAE
       run: |
         echo "runtime: nodejs20" > app.yaml
-        echo "service: capstone" >> app.yaml
+        echo "service: default" >> app.yaml
+        echo "version: 1"
         echo ""
         echo "env_variables:" >> app.yaml
         echo "  ACCESS_TOKEN_SECRET: '${{ secrets.ACCESS_TOKEN_SECRET_PROD }}'" >> app.yaml
