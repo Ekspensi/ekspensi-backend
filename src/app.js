@@ -9,6 +9,7 @@ import HapiSwagger from "hapi-swagger";
 import User from "./model/user.js";
 import Ekspensi from "./model/ekspensi.js";
 import NLPClassification from "./helpers/nlp.js";
+import { getSignedUrl } from "./helpers/cloudStorage.js";
 
 const init = async () => {
   const server = Hapi.server({
@@ -77,6 +78,11 @@ const init = async () => {
       loadMlModels(server),
       server.start(),
     ]);
+
+    await getSignedUrl(
+      "ekspensi-ml-model",
+      "ml-model/nlp-classification/vocabulary.json"
+    );
 
     console.log("Connection has been established successfully.");
     console.log("Server running on %s", server.info.uri);

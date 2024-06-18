@@ -21,6 +21,7 @@
     "nodemon": "^3.1.0"
   },
   "dependencies": {
+    "@google-cloud/storage": "^7.11.2",
     "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.3.9",
     "@hapi/inert": "^7.1.0",

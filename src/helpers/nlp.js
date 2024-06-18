@@ -1,10 +1,11 @@
 import tfjs from "@tensorflow/tfjs-node";
 
-const bucketName = process.env.GCP_BUCKET_NAME;
-const bucketUrl =
-  process.env.NODE_ENV === "production"
-    ? `https://storage.cloud.google.com/${bucketName}`
-    : `https://storage.googleapis.com/${bucketName}`;
+// const bucketName = process.env.GCP_BUCKET_NAME;
+const bucketUrl = `https://storage.googleapis.com/ekspensi-capstone-1122`;
+// const bucketUrl =
+//   process.env.NODE_ENV === "production"
+//     ? `https://storage.cloud.google.com/${bucketName}`
+//     : `https://storage.googleapis.com/${bucketName}`;
 
 export default (async () => {
   return {
