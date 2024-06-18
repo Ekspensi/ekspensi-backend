@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "NODE_ENV=development nodemon -r dotenv/config src/app.js dotenv_config_path=.env.development",
+    "dev": "NODE_ENV=development nodemon --ignore ./gcs/ -r dotenv/config src/app.js dotenv_config_path=.env.development",
     "start": "NODE_ENV=production node src/app.js",
     "lint": "eslint ."
   },

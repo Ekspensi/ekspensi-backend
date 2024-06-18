@@ -1,18 +1,36 @@
 import { Storage } from "@google-cloud/storage";
+import fs from "fs";
+import path from "path";
 
-const getSignedUrl = async (bucketName, fileName) => {
-  const storage = new Storage();
-  const bucket = storage.bucket(bucketName);
-  const file = bucket.file(fileName);
-  const options = {
-    version: "v4",
-    action: "read",
-    expires: Date.now() + 1 * 60 * 1000, // 1 minutes
-  };
+const storage = new Storage({
+  credentials:
+    process.env.NODE_ENV !== "production" &&
+    JSON.parse(process.env.GCP_SA_CREDENTIALS),
+});
 
-  const [url] = await file.getSignedUrl(options);
-  console.log(url);
-  return url;
+const listFiles = async (bucketName, bucketPath) => {
+  const [files] = await storage.bucket(bucketName).getFiles({
+    prefix: bucketPath + "/",
+  });
+  return files;
 };
 
-export { getSignedUrl };
+const downloadFiles = async (bucketName, bucketPath) => {
+  const files = await listFiles(bucketName, bucketPath);
+
+  await Promise.all(
+    files
+      .filter((file) => !file.name.endsWith("/"))
+      .map(async (file) => {
+        const destination = path.resolve(`./gcs/${file.name}`);
+
+        if (!fs.existsSync(path.dirname(destination))) {
+          fs.mkdirSync(path.dirname(destination), { recursive: true });
+        }
+
+        await file.download({ destination });
+      })
+  );
+};
+
+export { downloadFiles };
