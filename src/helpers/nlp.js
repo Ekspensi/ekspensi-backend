@@ -1,27 +1,30 @@
 import tfjs from "@tensorflow/tfjs-node";
 
 const bucketName = process.env.GCP_BUCKET_NAME;
+const bucketUrl =
+  process.env.NODE_ENV === "production"
+    ? `https://storage.cloud.google.com/${bucketName}`
+    : `https://storage.googleapis.com/${bucketName}`;
 
 export default (async () => {
   return {
     model: await (() => {
       return tfjs.loadLayersModel(
-        `https://storage.googleapis.com/${bucketName}/ml-model/nlp-classification/model.json`
+        `${bucketUrl}/ml-model/nlp-classification/model.json`
       );
     })(),
     vocabulary: await (async () => {
       return await fetch(
-        `https://storage.googleapis.com/${bucketName}/ml-model/nlp-classification/vocabulary.json`
+        `${bucketUrl}/ml-model/nlp-classification/vocabulary.json`
       ).then((response) => response.json());
     })(),
     label: await (async () => {
       return await fetch(
-        `https://storage.googleapis.com/${bucketName}/ml-model/nlp-classification/label_encoder.json`
+        `${bucketUrl}/ml-model/nlp-classification/label_encoder.json`
       )
         .then((response) => response.json())
         .then((data) => data.classes);
     })(),
-
     predict: function (text) {
       let price = text.match(/\d+/g);
       if (!price) {
