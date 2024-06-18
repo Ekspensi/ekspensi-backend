@@ -111,6 +111,7 @@ const loadMlModels = async (server) => {
 
 const onPreResponse = (request, h) => {
   const response = request.response;
+  console.log(response);
   if (response.isBoom) {
     const error = response.output.payload;
     return h.response(error).code(response.output.statusCode);
