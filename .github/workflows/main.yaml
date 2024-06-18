@@ -27,7 +27,7 @@ jobs:
         echo "  DB_USERNAME: '${{ secrets.DB_USERNAME_PROD }}'" >> app.yaml
         echo "  DB_PASSWORD: '${{ secrets.DB_PASSWORD_PROD }}'" >> app.yaml
         echo "vpc_access_connector:" >> app.yaml
-        echo "  name: 'project/${{ secrets.GCP_PROJECTID_PROD }}/locations/asia-southeast2/connectors/ekspensi-vpc-connector'"
+        echo "  name: 'projects/${{ secrets.GCP_PROJECTID_PROD }}/locations/asia-southeast2/connectors/ekspensi-vpc-connector'"
 
     - name: Deploy to GAE
       id: deploy
