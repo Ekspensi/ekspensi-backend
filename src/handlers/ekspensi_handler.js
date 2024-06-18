@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import sequelize from "../config/database.js";
 
 import Ekspensi from "../model/ekspensi.js";
-import { badRequest, internal } from "@hapi/boom";
+import { badRequest, internal, notFound } from "@hapi/boom";
 
 const getEkspensiById = async (request, h) => {
   try {

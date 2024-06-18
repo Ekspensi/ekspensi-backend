@@ -1,44 +1,26 @@
 import tfjs from "@tensorflow/tfjs-node";
-import fs from "fs";
-
-import { downloadFiles } from "./cloudStorage.js";
-import path from "path";
 
 export default (async () => {
+  // make sure the model is stored in the GCP bucket
+  // and the model can be accessed publicly
   const bucketName = process.env.GCP_BUCKET_NAME;
-  const bucketPath = "ml-model/nlp-classification";
-
-  if (!bucketName) {
-    throw new Error("GCP_BUCKET_NAME is not defined.");
-  }
-
-  try {
-    await downloadFiles(bucketName, bucketPath);
-  } catch (e) {
-    throw new Error("Failed to download nlp model files: " + e.message);
-  }
+  const bucketUrl = `https://storage.googleapis.com/${bucketName}`;
+  const modelPath = "ml-model/nlp-classification";
 
   return {
     model: await (async () => {
-      return await tfjs.loadLayersModel(
-        `file://${path.resolve(`./gcs/${bucketPath}/model.json`)}`
-      );
+      const modelUrl = `${bucketUrl}/${modelPath}/model.json`;
+      return tfjs.loadLayersModel(modelUrl);
     })(),
-    vocabulary: (() => {
-      const data = fs.readFileSync(
-        path.resolve(`./gcs/${bucketPath}/vocabulary.json`),
-        "utf8"
-      );
-      const vocabulary = JSON.parse(data);
-      return vocabulary;
+    vocabulary: await (async () => {
+      const modelUrl = `${bucketUrl}/${modelPath}/vocabulary.json`;
+      return await fetch(modelUrl).then((response) => response.json());
     })(),
-    label: (() => {
-      const data = fs.readFileSync(
-        path.resolve(`./gcs/${bucketPath}/label_encoder.json`),
-        "utf8"
-      );
-      const label = JSON.parse(data);
-      return label;
+    label: await (async () => {
+      const modelUrl = `${bucketUrl}/${modelPath}/label_encoder.json`;
+      return await fetch(modelUrl)
+        .then((response) => response.json())
+        .then((data) => data.classes);
     })(),
     predict: function (text) {
       let price = text.match(/\d+/g);
@@ -65,7 +47,6 @@ export default (async () => {
       const cleanedText = text.replace(/\d+/g, "").replace(/\s+/g, " ").trim();
       const textSplit = cleanedText.split(" ");
       const vector = new Array(Object.keys(this.vocabulary).length).fill(0);
-      console.log(Object.keys(this.vocabulary));
 
       textSplit.forEach((e) => {
         const index = this.vocabulary[e];
@@ -78,7 +59,6 @@ export default (async () => {
       const predict = this.model.predict(tensor);
       const predictedClass = predict.argMax(-1).dataSync()[0];
       const result = this.label[predictedClass];
-
       return {
         label: result,
         text: cleanedText,
