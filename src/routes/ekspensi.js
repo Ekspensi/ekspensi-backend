@@ -5,8 +5,7 @@ import {
   getEkspensiById,
   insertEkspensi,
 } from "../handlers/ekspensi_handler.js";
-import { badRequest, internal, notFound } from "@hapi/boom";
-import Ekspensi from "../model/ekspensi.js";
+import { badRequest } from "@hapi/boom";
 
 export default [
   {

@@ -2,7 +2,7 @@ name: Deploy to App Engine
 
 on:
   pull_request:
-    branches: [main]
+    branches: [development]
 
 jobs:
   deploy:
@@ -19,12 +19,12 @@ jobs:
         echo "service: capstone" >> app.yaml
         echo ""
         echo "env_variables:" >> app.yaml
-        echo "  ACCESS_TOKEN_SECRET: '${{ secrets.ACCESS_TOKEN_SECRET_PROD }}'" >> app.yaml
-        echo "  GCP_BUCKET_NAME: '${{ secrets.GCP_BUCKET_NAME_PROD }}'" >> app.yaml
-        echo "  DB_HOST: '${{ secrets.DB_HOST_PROD }}'" >> app.yaml
-        echo "  DB_NAME: '${{ secrets.DB_NAME_PROD }}'" >> app.yaml
-        echo "  DB_USERNAME: '${{ secrets.DB_USERNAME_PROD }}'" >> app.yaml
-        echo "  DB_PASSWORD: '${{ secrets.DB_PASSWORD_PROD }}'" >> app.yaml
+        echo "  ACCESS_TOKEN_SECRET: '${{ secrets.ACCESS_TOKEN_SECRET }}'" >> app.yaml
+        echo "  GCP_BUCKET_NAME: '${{ secrets.GCP_BUCKET_NAME }}'" >> app.yaml
+        echo "  DB_HOST: '${{ secrets.DB_HOST }}'" >> app.yaml
+        echo "  DB_NAME: '${{ secrets.DB_NAME }}'" >> app.yaml
+        echo "  DB_USERNAME: '${{ secrets.DB_USERNAME }}'" >> app.yaml
+        echo "  DB_PASSWORD: '${{ secrets.DB_PASSWORD }}'" >> app.yaml
 
     - name: Deploy to GAE
       id: deploy
@@ -32,8 +32,8 @@ jobs:
       with:
         deliverables: app.yaml
         version: v1
-        project_id: ${{ secrets.GCP_PROJECTID_PROD }}
-        credentials: ${{ secrets.GCP_CREDENTIALS_PROD }}
+        project_id: ${{ secrets.GCP_PROJECTID }}
+        credentials: ${{ secrets.GCP_CREDENTIALS }}
 
     - name: Test Availability
       run: curl "${{ steps.deploy.outputs.url }}"

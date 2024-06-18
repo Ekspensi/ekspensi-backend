@@ -35,15 +35,6 @@ const signInHandler = async (request, h) => {
       phonenum: user.phonenum,
     });
 
-    // set http cookie
-    h.state("access_token", jwt, {
-      path: "/",
-      isSecure: process.env.NODE_ENV === "production",
-      isHttpOnly: true,
-      isSameSite: "Lax",
-      ttl: 1000 * 60 * 60 * 24,
-    });
-
     return h
       .response({
         statusCode: 200,

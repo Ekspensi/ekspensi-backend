@@ -4,8 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/app.js",
-    "start": "NODE_ENV=production && node src/app.js",
+    "dev": "NODE_ENV=development nodemon -r dotenv/config src/app.js dotenv_config_path=.env.development",
+    "start": "NODE_ENV=production node src/app.js",
     "lint": "eslint ."
   },
   "author": "",
@@ -15,6 +15,7 @@
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.5.0",
+    "dotenv": "^16.4.5",
     "eslint": "^9.5.0",
     "globals": "^15.5.0",
     "nodemon": "^3.1.0"

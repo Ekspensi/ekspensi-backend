@@ -1,13 +1,11 @@
-// config/database.js
-
 import { Sequelize } from "sequelize";
 
 const sequelize = new Sequelize(
-  "postgres",
-  "postgres.lpbemkbhuorqvxspeooo",
-  "Sup3rSecr3tP2ssw0rd",
+  process.env.DB_NAME,
+  process.env.DB_USERNAME,
+  process.env.DB_PASSWORD,
   {
-    host: "aws-0-ap-southeast-1.pooler.supabase.com",
+    host: process.env.DB_HOST,
     dialect: "postgres",
     port: 5432,
     logging: false,
