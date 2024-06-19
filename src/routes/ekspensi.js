@@ -1,13 +1,33 @@
 import Joi from "joi";
 
 import {
+  editEkspensiById,
   getEkspensi,
   getEkspensiById,
+  getEkspensiKlasifikasi,
   insertEkspensi,
 } from "../handlers/ekspensi_handler.js";
 import { badRequest } from "@hapi/boom";
 
 export default [
+  {
+    method: "GET",
+    path: "/ekspensi/klasifikasi",
+    options: {
+      tags: ["api"],
+      auth: "user-access-control",
+      description:
+        "This route is used to get the classification of the ekspensi data.",
+      notes: `This route is protected by user-access-control strategy.
+      This route can only be accessed by authenticated user when the token is stored in authorization header.`,
+      validate: {
+        headers: Joi.object({
+          authorization: Joi.string().required(),
+        }).options({ allowUnknown: true }),
+      },
+    },
+    handler: getEkspensiKlasifikasi,
+  },
   {
     method: "PUT",
     path: "/ekspensi/{id}",
@@ -26,15 +46,12 @@ export default [
         }),
         payload: Joi.object({
           data: Joi.string().required(),
+          deskripsi: Joi.string().required(),
+          nominal: Joi.number().min(100).required(),
+          klasifikasi: Joi.string(),
         }),
       },
-      handler: async (request, h) => {
-        return h.response({
-          statusCode: 501,
-          message: "not implemented",
-          error: "not implemented",
-        });
-      },
+      handler: editEkspensiById,
     },
   },
   {
@@ -49,6 +66,9 @@ export default [
       validate: {
         headers: Joi.object({
           authorization: Joi.string().required(),
+        }),
+        payload: Joi.object({
+          data: Joi.string().required(),
         }),
         options: {
           allowUnknown: true,

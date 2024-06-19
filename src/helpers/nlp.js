@@ -1,27 +1,27 @@
 import tfjs from "@tensorflow/tfjs-node";
 
-const bucketName = process.env.GCP_BUCKET_NAME;
-
 export default (async () => {
+  // make sure the model is stored in the GCP bucket
+  // and the model can be accessed publicly
+  const bucketName = process.env.GCP_BUCKET_NAME;
+  const bucketUrl = `https://storage.googleapis.com/${bucketName}`;
+  const modelPath = "ml-model/nlp-classification";
+
   return {
-    model: await (() => {
-      return tfjs.loadLayersModel(
-        `https://storage.googleapis.com/${bucketName}/ml-model/nlp-classification/model.json`
-      );
+    model: await (async () => {
+      const modelUrl = `${bucketUrl}/${modelPath}/model.json`;
+      return tfjs.loadLayersModel(modelUrl);
     })(),
     vocabulary: await (async () => {
-      return await fetch(
-        `https://storage.googleapis.com/${bucketName}/ml-model/nlp-classification/vocabulary.json`
-      ).then((response) => response.json());
+      const modelUrl = `${bucketUrl}/${modelPath}/vocabulary.json`;
+      return await fetch(modelUrl).then((response) => response.json());
     })(),
     label: await (async () => {
-      return await fetch(
-        `https://storage.googleapis.com/${bucketName}/ml-model/nlp-classification/label_encoder.json`
-      )
+      const modelUrl = `${bucketUrl}/${modelPath}/label_encoder.json`;
+      return await fetch(modelUrl)
         .then((response) => response.json())
         .then((data) => data.classes);
     })(),
-
     predict: function (text) {
       let price = text.match(/\d+/g);
       if (!price) {
