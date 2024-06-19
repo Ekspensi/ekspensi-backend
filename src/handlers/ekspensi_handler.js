@@ -4,6 +4,59 @@ import sequelize from "../config/database.js";
 import Ekspensi from "../model/ekspensi.js";
 import { badRequest, internal, notFound } from "@hapi/boom";
 
+const getEkspensiKlasifikasi = async (request, h) => {
+  return h
+    .response({
+      statusCode: 200,
+      message: "success",
+      error: null,
+      data: request.server.app.models.ml.nlp.label,
+    })
+    .code(200);
+};
+
+const editEkspensiById = async (request, h) => {
+  const id = request.params.id;
+  const { data, deskripsi, nominal, klasifikasi } = request.payload;
+
+  if (!request.server.app.models.ml.nlp.label.includes(klasifikasi)) {
+    throw badRequest("klasifikasi value is not identified.");
+  }
+
+  try {
+    const ekspensi = await Ekspensi.findOne({
+      where: { id, username: request.auth.credentials.username },
+    });
+
+    ekspensi.setAttributes({
+      data,
+      deskripsi,
+      nominal,
+      klasifikasi,
+      updated_at: new Date().toISOString(),
+    });
+
+    const oldData = Object.assign({}, ekspensi._previousDataValues);
+    const newData = Object.assign({}, ekspensi.dataValues);
+
+    await ekspensi.save();
+
+    return h
+      .response({
+        statusCode: 200,
+        message: "data updated successfully",
+        error: null,
+        data: {
+          newData,
+          oldData,
+        },
+      })
+      .code(200);
+  } catch (e) {
+    return internal("error: " + e.message);
+  }
+};
+
 const getEkspensiById = async (request, h) => {
   try {
     const data = await Ekspensi.findOne({
@@ -101,13 +154,7 @@ const getEkspensi = async (request, h) => {
       })
       .code(200);
   } catch (error) {
-    return h
-      .response({
-        message: error.message,
-        status: "fail",
-        data: {},
-      })
-      .code(500);
+    return badRequest(error.message);
   }
 };
 
@@ -166,4 +213,10 @@ const insertEkspensi = async (request, h) => {
   }
 };
 
-export { insertEkspensi, getEkspensi, getEkspensiById };
+export {
+  insertEkspensi,
+  getEkspensi,
+  getEkspensiById,
+  editEkspensiById,
+  getEkspensiKlasifikasi,
+};
