@@ -1,8 +1,9 @@
 import { nanoid } from "nanoid";
 import sequelize from "../config/database.js";
+import { badRequest, internal, notFound } from "@hapi/boom";
 
 import Ekspensi from "../model/ekspensi.js";
-import { badRequest, internal, notFound } from "@hapi/boom";
+import EkspensiClassification from "../model/ekspensi_classification.js";
 
 const getEkspensiKlasifikasi = async (request, h) => {
   return h
@@ -84,6 +85,7 @@ const getEkspensiById = async (request, h) => {
 const getEkspensi = async (request, h) => {
   try {
     const {
+      klasifikasi,
       limit = 10,
       page = 1,
       startDate = null,
@@ -92,8 +94,19 @@ const getEkspensi = async (request, h) => {
 
     const [data] = await sequelize.query(`
       with data_count as (
-        select count(*)::integer total_data from ${Ekspensi.tableName}
+        select count(*)::integer total_data from ${Ekspensi.tableName} a
           where username = '${request.auth.credentials.username}'
+          ${
+            !klasifikasi
+              ? ""
+              : klasifikasi === "tidak teridentifikasi"
+              ? `
+              AND NOT EXISTS  (
+              select 1 from ${EkspensiClassification.tableName} b 
+              where b.klasifikasi = a.klasifikasi
+            )`
+              : `AND a.klasifikasi = '${klasifikasi}'`
+          }
           ${startDate ? `and created_at >= '${startDate}'` : ""}
           ${endDate ? `and created_at <= '${endDate}'` : ""}
       ),
@@ -101,8 +114,19 @@ const getEkspensi = async (request, h) => {
         select
         row_number() over(partition by username order by created_at desc) no,
         *
-        from ${Ekspensi.tableName} 
+        from ${Ekspensi.tableName} a
         where username = '${request.auth.credentials.username}'
+        ${
+          !klasifikasi
+            ? ""
+            : klasifikasi === "tidak teridentifikasi"
+            ? `
+            AND NOT EXISTS  (
+            select 1 from ${EkspensiClassification.tableName} b 
+            where b.klasifikasi = a.klasifikasi
+          )`
+            : `AND a.klasifikasi = '${klasifikasi}'`
+        }
         ${startDate ? `and created_at >= '${startDate}'` : ""}
         ${endDate ? `and created_at <= '${endDate}'` : ""}
         order by created_at desc

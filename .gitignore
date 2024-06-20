@@ -1,5 +1,6 @@
 node_modules
 gcs
+nlp-classification
 
 .env.*
 !.env.example

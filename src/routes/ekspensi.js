@@ -148,6 +148,7 @@ export default [
           authorization: Joi.string().required(),
         }).options({ allowUnknown: true }),
         query: Joi.object({
+          klasifikasi: Joi.string().optional(),
           limit: Joi.number().integer().min(1).max(25).default(10).messages({
             "number.base": "limit must be a number",
             "number.min": "limit must be at least 1",

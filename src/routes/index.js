@@ -1,6 +1,7 @@
 import auth from "./auth.js";
 import user from "./user.js";
 import ekspensi from "./ekspensi.js";
+import dashboard from "./dashboard.js";
 
 export default [
   {
@@ -13,4 +14,5 @@ export default [
   ...auth,
   ...user,
   ...ekspensi,
+  ...dashboard,
 ];
