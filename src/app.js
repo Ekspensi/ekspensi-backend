@@ -9,6 +9,7 @@ import HapiSwagger from "hapi-swagger";
 import User from "./model/user.js";
 import Ekspensi from "./model/ekspensi.js";
 import NLPClassification from "./helpers/nlp.js";
+import EkspensiClassification from "./model/ekspensi_classification.js";
 
 const init = async () => {
   const server = Hapi.server({
@@ -71,13 +72,13 @@ const init = async () => {
   try {
     await Promise.all([
       sequelize.authenticate({ retry: { timeout: 5000 } }),
-      syncDbModels(),
       sequelize.query("SET timezone TO 'Asia/Jakarta';"),
       sequelize.query("CREATE EXTENSION IF NOT EXISTS tablefunc;"),
       loadMlModels(server),
-      server.start(),
     ]);
 
+    await syncDbModels(server);
+    await server.start();
     console.log("Connection has been established successfully.");
     console.log("Server running on %s", server.info.uri);
   } catch (error) {
@@ -91,9 +92,19 @@ process.on("unhandledRejection", (err) => {
   process.exit(1);
 });
 
-const syncDbModels = async () => {
+const syncDbModels = async (server) => {
   try {
-    await Promise.all([User.sync(), Ekspensi.sync()]);
+    await Promise.all([
+      User.sync(),
+      Ekspensi.sync(),
+      EkspensiClassification.sync({ force: true }),
+    ]);
+
+    await EkspensiClassification.bulkCreate(
+      server.app.models.ml.nlp.label.map((label) => ({
+        klasifikasi: label,
+      }))
+    );
   } catch (error) {
     console.log("error: ", error.message);
   }
